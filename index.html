@@ -11,7 +11,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background-color: #f4f6f9;
       color: #333;
-      padding: 16px;
+      padding: 16px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -22,8 +22,8 @@
       background: white;
       width: 100%;
       max-width: 480px;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
       border: 1px solid #e0e6ed;
       overflow: hidden;
       margin-bottom: 20px;
@@ -52,8 +52,8 @@
       font-weight: bold;
       outline: none;
       cursor: pointer;
-      width: 85%;
-      max-width: 320px;
+      width: 90%;
+      max-width: 340px;
       text-align: center;
     }
 
@@ -67,7 +67,16 @@
       margin-top: 10px;
       cursor: pointer;
     }
+    .update-btn:active { background: rgba(255, 255, 255, 0.3); }
+
+    .gps-status {
+      font-size: 11px;
+      color: #90cdf4;
+      margin-top: 6px;
+    }
+
     .eta-list { padding: 16px; }
+    
     .stop-group-title {
       font-size: 14px;
       font-weight: bold;
@@ -75,10 +84,15 @@
       margin: 16px 0 10px 4px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       border-bottom: 2px solid #e2e8f0;
       padding-bottom: 6px;
     }
-    .stop-group-title::before {
+    .stop-group-title .title-left {
+      display: flex;
+      align-items: center;
+    }
+    .stop-group-title .title-left::before {
       content: "";
       display: inline-block;
       width: 4px;
@@ -87,33 +101,79 @@
       margin-right: 8px;
       border-radius: 2px;
     }
+    .distance-tag {
+      font-size: 11px;
+      color: #3182ce;
+      background: #ebf8ff;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
     .route-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       background: #fffdf0;
       border: 1.5px solid #ffd100;
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 12px 16px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
     .route-item.kmb {
       background: #fff5f5;
       border-color: #ff5252;
     }
-    .route-badge { display: flex; flex-direction: column; align-items: flex-start; min-width: 65px; }
-    .route-number { font-size: 20px; font-weight: 800; color: #1a365d; }
-    .company-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-top: 2px; }
+    .route-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    .route-badge { display: flex; align-items: center; gap: 6px; }
+    .route-number { font-size: 22px; font-weight: 800; color: #1a365d; }
+    .company-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
     .ctb-tag { background-color: #ffd100; color: #333; }
     .kmb-tag { background-color: #e60012; color: white; }
-    
-    .route-info { flex: 1; padding: 0 12px; }
     .dest-name { font-size: 14px; font-weight: bold; color: #2d3748; }
-    .eta-times { text-align: right; min-width: 125px; }
-    .primary-eta { font-size: 15px; font-weight: bold; color: #2b6cb0; }
-    .secondary-eta { font-size: 11px; color: #718096; margin-top: 3px; }
+
+    /* 班次顯示區塊 */
+    .eta-rows { display: flex; flex-direction: column; gap: 8px; }
+    
+    .primary-box {
+      background: #ebf8ff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .route-item.kmb .primary-box { background: #ffe3e3; }
+    .primary-label { font-size: 12px; font-weight: bold; color: #2b6cb0; }
+    .route-item.kmb .primary-label { color: #c53030; }
+    .primary-time { font-size: 16px; font-weight: bold; color: #2c5282; }
+    .arriving-now { color: #e53e3e; font-weight: bold; animation: blink 1.2s infinite; }
+
+    .secondary-row { display: flex; gap: 8px; }
+    .sub-box {
+      flex: 1;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 6px 8px;
+      text-align: center;
+    }
+    .sub-label { font-size: 10px; color: #718096; margin-bottom: 2px; }
+    .sub-time { font-size: 12px; font-weight: bold; color: #4a5568; }
+
     .status-msg { text-align: center; padding: 24px; color: #718096; font-size: 14px; }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
   </style>
 </head>
 <body>
@@ -121,18 +181,20 @@
   <div class="card">
     <div class="header">
       <h1>黃竹坑 ↔ 銅鑼灣 巴士到站時間表</h1>
-      <p>📍 選擇巴士站觀測全路線到站時間</p>
+      <p>📍 選擇車站或開啟 GPS 自動定位排序</p>
 
       <div class="select-container">
-        <select id="stopSelector" class="stop-select" onchange="loadAllEta()">
-          <option value="ALL">📍 所有車站 (一次看全部)</option>
+        <select id="stopSelector" class="stop-select" onchange="onSelectChange()">
+          <option value="AUTO">📍 自動定位 (近至遠排序)</option>
+          <option value="ALL">📍 所有車站 (預設順序)</option>
           <option value="002439">銅鑼灣 - 希慎廣場, 軒尼詩道</option>
           <option value="002404">堅拿道巴士專用線</option>
           <option value="002383">業興街, 黃竹坑道</option>
         </select>
       </div>
 
-      <button class="update-btn" onclick="loadAllEta()">🔄 更新到站時間</button>
+      <button class="update-btn" onclick="manualRefresh()">🔄 更新到站時間</button>
+      <div id="gpsStatus" class="gps-status">📡 定位獲取中...</div>
     </div>
 
     <div class="eta-list" id="etaContainer">
@@ -141,10 +203,11 @@
   </div>
 
   <script>
+    // 加上精確經緯度以計算 GPS 距離
     const TARGET_STOPS = [
-      { id: '002439', kmbId: '', name: '銅鑼灣 - 希慎廣場, 軒尼詩道' },
-      { id: '002404', kmbId: 'B17A07239E3E576E', name: '堅拿道巴士專用線' },
-      { id: '002383', kmbId: 'AE4E8F82AD65348C', name: '業興街, 黃竹坑道' }
+      { id: '002439', kmbId: '', name: '銅鑼灣 - 希慎廣場, 軒尼詩道', lat: 22.2799, lng: 114.1837 },
+      { id: '002404', kmbId: 'B17A07239E3E576E', name: '堅拿道巴士專用線', lat: 22.2783, lng: 114.1813 },
+      { id: '002383', kmbId: 'AE4E8F82AD65348C', name: '業興街, 黃竹坑道', lat: 22.2483, lng: 114.1685 }
     ];
 
     const ALL_ROUTES = [
@@ -152,6 +215,47 @@
       '90', '90B', '96', '97', '99', '99X', '107', '107P', '108', '112', '116', '170', '171', '171A', 
       '592', '671', '671X', '973', 'A17', 'N72', 'N122'
     ];
+
+    let userLat = null;
+    let userLng = null;
+
+    // 計算經緯度距離 (公里)
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // 獲取 GPS 位置
+    function getUserLocation() {
+      return new Promise((resolve) => {
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              userLat = pos.coords.latitude;
+              userLng = pos.coords.longitude;
+              document.getElementById('gpsStatus').innerText = '📡 已按 GPS 距離自動排序';
+              resolve(true);
+            },
+            (err) => {
+              console.warn("GPS 取得失敗:", err);
+              document.getElementById('gpsStatus').innerText = '⚠️ 無法取得 GPS (顯示預設順序)';
+              resolve(false);
+            },
+            { timeout: 8000, enableHighAccuracy: true }
+          );
+        } else {
+          document.getElementById('gpsStatus').innerText = '⚠️ 裝置不支援 GPS';
+          resolve(false);
+        }
+      });
+    }
 
     // 抓取城巴 ETA
     async function fetchCtbEta(stopId, route) {
@@ -204,13 +308,27 @@
 
     async function loadAllEta() {
       const container = document.getElementById('etaContainer');
-      const selectedStopId = document.getElementById('stopSelector').value;
+      const selectedValue = document.getElementById('stopSelector').value;
       const now = new Date();
 
       try {
-        const filteredStops = selectedStopId === 'ALL' 
-          ? TARGET_STOPS 
-          : TARGET_STOPS.filter(s => s.id === selectedStopId);
+        let sortedStops = [...TARGET_STOPS];
+
+        // 若開啟 GPS 且成功取得座標，進行距離計算並排序
+        if (userLat !== null && userLng !== null) {
+          sortedStops.forEach(s => {
+            s.distance = calculateDistance(userLat, userLng, s.lat, s.lng);
+          });
+          if (selectedValue === 'AUTO') {
+            sortedStops.sort((a, b) => a.distance - b.distance);
+          }
+        }
+
+        // 過濾車站
+        let filteredStops = sortedStops;
+        if (selectedValue !== 'AUTO' && selectedValue !== 'ALL') {
+          filteredStops = sortedStops.filter(s => s.id === selectedValue);
+        }
 
         const promises = filteredStops.map(stopObj => fetchStopAllRoutes(stopObj));
         const results = await Promise.all(promises);
@@ -220,7 +338,21 @@
         filteredStops.forEach((stop, index) => {
           const rawList = results[index] || [];
 
-          html += `<div class="stop-group-title">${stop.name}</div>`;
+          // 距離提示
+          let distText = '';
+          if (stop.distance !== undefined) {
+            const distMeters = Math.round(stop.distance * 1000);
+            distText = distMeters > 1000 
+              ? `<span class="distance-tag">📍 約 ${(stop.distance).toFixed(1)} km</span>`
+              : `<span class="distance-tag">📍 約 ${distMeters} m</span>`;
+          }
+
+          html += `
+            <div class="stop-group-title">
+              <span class="title-left">${stop.name}</span>
+              ${distText}
+            </div>
+          `;
 
           if (rawList.length > 0) {
             const routeMap = {};
@@ -237,16 +369,27 @@
 
               const bus1 = matched[0];
               const bus2 = matched[1];
+              const bus3 = matched[2];
 
+              // 第一班
               const diff1 = Math.max(0, Math.round((new Date(bus1.eta) - now) / 60000));
               const timeStr1 = new Date(bus1.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const pText = diff1 === 0 ? '<span class="arriving-now">即將到站</span>' : `${diff1} 分鐘 <span style="font-size:12px;font-weight:normal;color:#666;">(${timeStr1})</span>`;
 
-              let primaryStr = diff1 === 0 ? '即將到站' : `${diff1} 分鐘 <span style="font-size:11px;font-weight:normal;">(${timeStr1})</span>`;
-              let secondEtaStr = '暫無次班';
+              // 第二班
+              let secText = '---';
               if (bus2 && bus2.eta) {
                 const diff2 = Math.max(0, Math.round((new Date(bus2.eta) - now) / 60000));
                 const timeStr2 = new Date(bus2.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                secondEtaStr = `次班: ${timeStr2} (${diff2}分)`;
+                secText = `${diff2}分 <span style="font-size:10px;color:#888;">(${timeStr2})</span>`;
+              }
+
+              // 第三班
+              let thirdText = '---';
+              if (bus3 && bus3.eta) {
+                const diff3 = Math.max(0, Math.round((new Date(bus3.eta) - now) / 60000));
+                const timeStr3 = new Date(bus3.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                thirdText = `${diff3}分 <span style="font-size:10px;color:#888;">(${timeStr3})</span>`;
               }
 
               const isKmb = bus1.co === 'KMB';
@@ -256,16 +399,30 @@
 
               html += `
                 <div class="route-item ${companyClass}">
-                  <div class="route-badge">
-                    <span class="route-number">${routeName}</span>
-                    <span class="company-tag ${tagClass}">${tagText}</span>
-                  </div>
-                  <div class="route-info">
+                  <div class="route-header">
+                    <div class="route-badge">
+                      <span class="route-number">${routeName}</span>
+                      <span class="company-tag ${tagClass}">${tagText}</span>
+                    </div>
                     <div class="dest-name">往 ${bus1.dest_tc || '目的地'}</div>
                   </div>
-                  <div class="eta-times">
-                    <div class="primary-eta">${primaryStr}</div>
-                    <div class="secondary-eta">${secondEtaStr}</div>
+
+                  <div class="eta-rows">
+                    <div class="primary-box">
+                      <span class="primary-label">首班</span>
+                      <span class="primary-time">${pText}</span>
+                    </div>
+
+                    <div class="secondary-row">
+                      <div class="sub-box">
+                        <div class="sub-label">次班</div>
+                        <div class="sub-time">${secText}</div>
+                      </div>
+                      <div class="sub-box">
+                        <div class="sub-label">第三班</div>
+                        <div class="sub-time">${thirdText}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               `;
@@ -282,7 +439,20 @@
       }
     }
 
-    loadAllEta();
+    async function init() {
+      await getUserLocation();
+      loadAllEta();
+    }
+
+    function onSelectChange() {
+      loadAllEta();
+    }
+
+    function manualRefresh() {
+      loadAllEta();
+    }
+
+    init();
     setInterval(loadAllEta, 15000);
   </script>
 </body>
